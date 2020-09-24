@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const pets = require('./routes/api/pets');
+const users = require('./routes/api/users');
 
 const app = express();
 
@@ -25,6 +27,7 @@ mongoose.connect(db,
 
 // use routes
 app.use('/api/pets', pets)
+app.use('/api/users', users)
 
 const port = process.env.PORT || 3000;
 const HOST = 'localhost';

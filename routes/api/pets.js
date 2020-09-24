@@ -1,10 +1,10 @@
 const express = require('express');
-const { remove } = require('../../models/Pet');
 const router = express.Router();
 
 
 // Pet Model
 const Pet = require('../../models/Pet');
+
 
 // @route GET api/pets
 // @desc Get all pets
@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
 
 // @route POST api/pets
 // @desc Create a pet
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
   const newPet = new Pet({
     picture: req.body.picture,
     name: req.body.name,
@@ -30,8 +30,9 @@ router.post('/', (req, res) => {
 
 // @route DELETE api/pets/:id
 // @desc Delete a pet
-router.delete('/:id', (req, res) => {
-  Pet.findById(req.params.id)
+router.delete('/:id', (req, res, next) => {
+  const _id = req.params.id;
+  Pet.findById(_id)
   .then(pet => pet.remove().then(() => res.json({ success: true })))
   .catch(err => res.status(404).json({ success: false }));
   });

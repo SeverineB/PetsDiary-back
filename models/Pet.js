@@ -8,6 +8,10 @@ const PetSchema = new Schema({
     data: Buffer,
     contentType: String
   },
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   name: {
     type: String,
     required: true
@@ -25,6 +29,8 @@ const PetSchema = new Schema({
   }
 });
 
+/*
+TO TRANSFORM _ID IN ID
 PetSchema.method('transform', function() {
   var obj = this.toObject();
 
@@ -34,5 +40,6 @@ PetSchema.method('transform', function() {
 
   return obj;
 });
+*/
 
 module.exports = Pet = mongoose.model('pet', PetSchema)
