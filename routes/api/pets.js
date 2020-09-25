@@ -1,6 +1,6 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
-
 
 // Pet Model
 const Pet = require('../../models/Pet');
@@ -32,7 +32,7 @@ router.post('/', (req, res, next) => {
 // @desc Delete a pet
 router.delete('/:id', (req, res, next) => {
   const _id = req.params.id;
-  Pet.findById(_id)
+  findById(_id)
   .then(pet => pet.remove().then(() => res.json({ success: true })))
   .catch(err => res.status(404).json({ success: false }));
   });
