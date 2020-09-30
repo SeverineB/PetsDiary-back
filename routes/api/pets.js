@@ -8,11 +8,22 @@ const Pet = require('../../models/Pet');
 
 // @route GET api/pets
 // @desc Get all pets
-router.get('/', (req, res) => {
+/* router.get('/', async (req, res) => {
   Pet.find()
   .sort({ name: -1 })
   .then(pets => res.json(pets))
-});
+}); */
+
+// @route GET api/pets with async await function
+
+router.get('/', async (req, res) => {
+  try {
+    const pets = await Pet.find({})
+    res.send(pets)
+  } catch (error) {
+    res.status(500).send()
+  }
+})
 
 // @route POST api/pets
 // @desc Create a pet

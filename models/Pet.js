@@ -26,6 +26,53 @@ const PetSchema = new Schema({
   },
   breed: {
     type: String,
+  },
+  general: {
+    birthdate: {
+      type: Date,
+      required: true
+    },
+    height: {
+      type: Number,
+      required: true
+    },
+    weight: {
+      type: Number,
+      required: true
+    },
+    sex: {
+      type: String,
+      required: true
+    },
+    tatto: {
+      type: String,
+    },
+    health: {
+      vaccine: [{
+        date: {
+          type: Date,
+        },
+        name: {
+          type: String,
+        }
+      }],
+      deworming: [{
+        date: {
+          type: Date,
+        },
+        name: {
+          type: String,
+        }
+      }],
+      antiflea: [{
+        date: {
+          type: Date,
+        },
+        name: {
+          type: String,
+        }
+      }]
+    }
   }
 });
 
