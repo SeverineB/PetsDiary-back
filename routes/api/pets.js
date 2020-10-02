@@ -1,43 +1,17 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const router = express.Router();
 
-// Pet Model
-const Pet = require('../../models/Pet');
+const PetController = require('../../controllers/pets/pets');
 
-
-// @route GET api/pets
-// @desc Get all pets
-/* router.get('/', async (req, res) => {
-  Pet.find()
-  .sort({ name: -1 })
-  .then(pets => res.json(pets))
-}); */
+const auth = require('../../middlewares/auth');
 
 // @route GET api/pets with async await function
 
-router.get('/', async (req, res) => {
-  try {
-    const pets = await Pet.find({})
-    res.send(pets)
-  } catch (error) {
-    res.status(500).send()
-  }
-})
+router.get('/', PetController.findAll);
 
 // @route POST api/pets
 // @desc Create a pet
-router.post('/', (req, res, next) => {
-  const newPet = new Pet({
-    picture: req.body.picture,
-    name: req.body.name,
-    age: req.body.age,
-    species: req.body.species,
-    breed: req.body.breed
-  });
-
-  newPet.save().then(pet => res.json(pet));
-});
+router.post('/add', PetController.addPet);
 
 // @route DELETE api/pets/:id
 // @desc Delete a pet

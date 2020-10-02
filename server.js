@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const session = require('express-session');
 const cors = require('cors');
 const config = require('config');
 
@@ -12,8 +13,15 @@ const app = express();
 // bodyparser middleware
 app.use(bodyParser.json());
 
+// Session middleware
+app.use(session({secret: 'ssshhhhh',saveUninitialized: true,resave: true}));
+
+const corsOptions = {
+  origin: "http://localhost:8080"
+};
+
 // cors manage
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Database Config
 const db = config.get('mongoURI');

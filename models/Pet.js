@@ -27,7 +27,7 @@ const PetSchema = new Schema({
   breed: {
     type: String,
   },
-  general: {
+  /* general: {
     birthdate: {
       type: Date,
       required: true
@@ -73,7 +73,7 @@ const PetSchema = new Schema({
         }
       }]
     }
-  }
+  } */
 });
 
 /*

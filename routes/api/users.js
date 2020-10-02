@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
 const config = require('config');
-const jwt = require('jsonwebtoken');
 
 const UserController = require('../../controllers/users/users');
 
@@ -20,5 +18,15 @@ router.post('/register', UserController.createOne);
 // @desc Login user
 
 router.post('/login', UserController.login);
+
+// @route POST api/users
+// @desc Check if user logged
+
+router.post('/isLogged', UserController.checkIsLogged);
+
+// @route POST api/users
+// @desc Deconnect user
+
+router.post('/logout', UserController.logout);
 
 module.exports = router;

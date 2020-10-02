@@ -3,10 +3,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { authSchema } = require('../../validations/users');
 
-
 module.exports = {
-  // Get all the users
 
+  // Get all the users
+  // Use async await functions 
   findAll: async (req, res) => {
     try {
       const users = await User.find({})
@@ -37,7 +37,14 @@ module.exports = {
         username,
       })
       await newUser.save();
-      res.send({ userId: newUser.id, username});
+      /* res.send(newUser); */
+      res.status(200).json({ 
+        isLogged: true,
+        session: {
+          _id: newUser._id,
+          username: newUser.username,
+          }
+      })
     } catch (error) {
       if (error.isJoi === true ) {
         /* res.status(422, error.message).end(); */
@@ -48,37 +55,77 @@ module.exports = {
     }
   },
 
-  // Login in a user
+  findById: async (req, res) => {
+    const user = await User.findById(req.params.id);
+    res.send(user);
+  },
+
+  // Log in a user
 
   login: async (req, res) => {
-    
-      const { email, password } = req.body;
+    const { email, password } = req.body;
 
-      const user = await User.findOne({ email: email});
-      if (!user) {
-        res.status(401).send({ 
-          error: {
-            message: 'Mauvais email !'
-          }
-        });
-      } else {
-        const isMatch = await bcrypt.compare(password, user.password)
-        if (!isMatch) {
-          res.status(401).send({ 
-            error: {
-              message: 'Mauvais mot de passe !'
-            }
-          });
-        } else {
-          const token = jwt.sign({ user: user }, 'secretkey', { expiresIn: '1 hour'})
-          res.status(200).json({
-            token,
-            session: {
-              _id: user._id,
-              username: user.username,
-            }
-          })
+    const user = await User.findOne({ email: email});
+    if (!user) {
+      res.status(401).send({ 
+        error: {
+          message: 'Mauvais email !'
         }
+      });
+    } else {
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      res.status(401).send({ 
+        error: {
+          message: 'Mauvais mot de passe !'
+        }
+      });
+    }  else {
+      const token = jwt.sign({ id: user._id }, 'secretkey', { expiresIn: 86400});
+      res.status(200).json({
+        isLogged: true,
+        token,
+        session: {
+          _id: user._id,
+          username: user.username,
+          }
+        })
       }
+    }
+  },
+
+  // Check if a user is logged
+
+  checkIsLogged: async (req, res) => {
+    try {
+      const decoded = jwt.verify(req.body.token, 'secretkey');
+      
+      const user = await User.findOne({
+        _id: req.body.id,
+      });
+      if (!user) {
+        res.status(401).send('Cet utilisateur n\'existe pas !')
+      }
+      res.send({
+        isLogged: true,
+        session: {
+           _id: user._id,
+          username: user.username,
+        }
+      })
+    } catch (error) {
+      res.status(401).send('requête impossible');
+    }
+  },
+
+  logout: async (req, res) => {
+      res.send({
+        isLogged: false,
+        session: {
+          _id: "",
+          username: "",
+        }
+      })
   }
 }
