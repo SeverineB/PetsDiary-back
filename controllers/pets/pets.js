@@ -2,18 +2,23 @@ const Pet = require('../../models/Pet');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+
+
 module.exports = {
 
   // Get all the pets
 
   findAll: async (req, res) => {
     try {
-      const pets = await Pet.find({})
-      res.send(pets)
+      const pets = await Pet.find({});
+      console.log('dans petcontroller findall pets vaut ', pets);
+      res.status(200).send(pets);
     } catch (error) {
       res.status(500).send()
     }
   },
+
+  
 
   // Create new pet
 
