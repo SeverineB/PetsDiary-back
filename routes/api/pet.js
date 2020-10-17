@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const PetController = require('../../controllers/pets/pets');
+const PetController = require('../../controllers/pet.controller');
 
 const auth = require('../../middlewares/auth');
 
@@ -11,10 +11,17 @@ router.get('/', PetController.findAll);
 
 // @route POST api/pets
 // @desc Create a pet
+
 router.post('/add', PetController.addPet);
+
+// @route POST api/pets
+// @desc Find health diary by pet ID
+
+router.post('/add', PetController.findHealthByPet);
 
 // @route DELETE api/pets/:id
 // @desc Delete a pet
+
 router.delete('/:id', (req, res, next) => {
   const _id = req.params.id;
   findById(_id)

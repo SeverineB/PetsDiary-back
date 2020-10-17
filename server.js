@@ -1,27 +1,36 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const config = require('config');
 
-const pets = require('./routes/api/pets');
-const users = require('./routes/api/users');
+const pets = require('./routes/api/pet');
+const users = require('./routes/api/user');
 
 const app = express();
 
 // bodyparser middleware
 app.use(bodyParser.json());
 
-// Session middleware
-app.use(session({secret: 'ssshhhhh',saveUninitialized: true,resave: true}));
-
 const corsOptions = {
-  origin: "http://localhost:8080"
+  origin: ['http://localhost:8080'],
+  allowedHeaders: [
+    'Accept',
+    'Content-Type',
+    'Authorization',
+    'Access-Control-Allow-Methods',
+    'Access-Control-Request-Headers',
+  ],
+  credentials: true,
+  enablePreflight: true,
 };
 
 // cors manage
 app.use(cors(corsOptions));
+
+// cookie-parser middleware
+app.use(cookieParser());
 
 // Database Config
 const db = config.get('mongoURI');
@@ -34,10 +43,10 @@ mongoose.connect(db,
 .catch(err => console.log(err));
 
 // use routes
-app.use('/api/pets', pets)
-app.use('/api/users', users)
+app.use('/api/pet', pets)
+app.use('/api/user', users)
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 const HOST = 'localhost';
 
 app.listen(port, HOST, () => console.log(`Serveur lancé sur le port ${port}`));
