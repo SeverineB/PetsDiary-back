@@ -17,7 +17,12 @@ router.post('/add', PetController.addPet);
 // @route POST api/pets
 // @desc Find health diary by pet ID
 
-router.post('/add', PetController.findHealthByPet);
+router.post('/health', PetController.findHealthByPet);
+
+// @route POST api/pets
+// @desc Find pets of a user
+
+router.get('/pets', PetController.findPetsByUser);
 
 // @route DELETE api/pets/:id
 // @desc Delete a pet

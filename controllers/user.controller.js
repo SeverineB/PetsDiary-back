@@ -138,14 +138,14 @@ module.exports = {
 
   checkIsLogged: async (req, res) => {
     const token = req.cookies.token;
-    if (!token)
-      res.status(401).send({message: 'Il n\'y a pas de token !'})
+    if (!token){
+      return res.status(401).send({message: 'Il n\'y a pas de token !'})}
     try {
       const decoded = jwt.verify(req.body.token, 'secretkey');
       
       const user = await User.findOne({_id: req.body.id});
       if (!user) {
-        res.status(401).send('Cet utilisateur n\'existe pas !')
+        return res.status(401).send('Cet utilisateur n\'existe pas !')
       }
       req.user = decoded;
       res.send({

@@ -1,22 +1,20 @@
 const Pet = require('../models/pet.model');
-const User = require('../models/user.model');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const Health = require('../models/note.model');
 
 module.exports = {
 
-  // Get all the pets
+  // Get all the pets notes
 
   findAll: async (req, res) => {
     try {
-      const pets = await Pet.find({})
-      res.send(pets)
+      const notes = await Note.find({})
+      res.send(notes)
     } catch (error) {
       res.status(500).send()
     }
   },
 
-  // Get pets by user
+  // Get notes by pet
 
   findPetsByUser: async (req, res) => {
     try {
@@ -30,24 +28,17 @@ module.exports = {
     }
   },
 
-  // Create new pet
+  // Create new note
 
-  addPet: async (req, res) => {
+  addNote: async (req, res) => {
    try {
-    console.log('je suis dans le try de ADDPET');
-    console.log('REQ BODY VAUT ', req.body);
-    const { name, age, species, breed, user_id } = req.body;
-    const newPet = await Pet.create({
-      name,
-      age,
-      species,
-      breed,
-      user_id,
+    const { pet_id, birthdate, height, weight, sex, tatto } = req.body;
+    const newNote = await Note.create({
+       
     });
-    await newPet.save();
-    console.log('je suis après la sauvegarde en db');
+    await newNote.save();
+
     const userById = await User.findById(newPet.user_id);
-    console.log('USER BY ID ', userById);
     userById.pets.push(newPet);
     await userById.save();
 
@@ -57,14 +48,4 @@ module.exports = {
      res.status(401).send({message: 'impossible de créer l\'animal'});
    }
   },
-
-  findHealthByPet: async (req, res) => {
-    try {
-
-    }
-    catch {
-      
-    }
-  }
-
 }

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 // create Schema
-const PetSchema = new Schema({
+const NoteSchema = new Schema({
     pet_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'pet'
@@ -55,4 +55,4 @@ const PetSchema = new Schema({
     }
 });
 
-module.exports = Pet = mongoose.model('pet', PetSchema)
+module.exports = Note = mongoose.model('note', NoteSchema)
