@@ -1,28 +1,28 @@
 const express = require('express');
 const router = express.Router();
-
-const PetController = require('../../controllers/pet.controller');
-
 const auth = require('../../middlewares/auth');
+
+const Pet = require('../../controllers/pet.controller');
+
 
 // @route GET api/pets with async await function
 
-router.get('/', PetController.findAll);
+router.get('/', Pet.findAll);
 
 // @route POST api/pets
 // @desc Create a pet
 
-router.post('/add', PetController.addPet);
+router.post('/add', auth, Pet.addPet);
 
 // @route POST api/pets
 // @desc Find health diary by pet ID
 
-router.post('/health', PetController.findHealthByPet);
+router.post('/health', auth, Pet.findHealthByPet);
 
 // @route POST api/pets
 // @desc Find pets of a user
 
-router.get('/pets', PetController.findPetsByUser);
+/* router.get('/pets/:id', auth, Pet.findPetsByUser); */
 
 // @route DELETE api/pets/:id
 // @desc Delete a pet

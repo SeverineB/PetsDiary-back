@@ -98,6 +98,11 @@ module.exports = {
    
       console.log('je suis avant la création du token')
       const token = jwt.sign({ id: user._id }, 'secretkey', {expiresIn: 86400});
+
+      // store token in db
+      user.token = token;
+      console.log('USER TOKEN ', user.token)
+      await user.save();
   
       // send the token in a cookie
       res.cookie('token', token, {maxAge: 86400, httpOnly:true, path: '/'}).send({
@@ -119,61 +124,36 @@ module.exports = {
 
   // Find all the pets of a user
 
-  findAllPetsOfUser: async (req, res) => {
-    const { id } = req.body;
-    console.log('REQ BODY ID', req.body.id);
+  getAllPets: async (req, res) => {
     try {
-      console.log('je suis dans le try')
-      const user = await User.findOne({_id: req.params.id}).populate('pets');
+      const { id } = req.params;
+      console.log('REQ PARAMS FINDALLPETSOFUSER', req.params.id);
+      console.log('je suis dans le try de findAllPetsOfUser')
+      const user = await User.findById(req.params.id).populate('pets');
       console.log('USER ', user)
       res.send(user.pets)
-
     }
     catch (error) {
-      res.status(401).send({message: 'Impossible de récupérer les animaux de cet utilisateur'});
+      res.status(401).send({message: 'Impossible de récupérer les animaux de'});
     }
   },
 
   // Check if a user is logged
 
   checkIsLogged: async (req, res) => {
-    const token = req.cookies.token;
-    if (!token){
-      return res.status(401).send({message: 'Il n\'y a pas de token !'})}
-    try {
-      const decoded = jwt.verify(req.body.token, 'secretkey');
-      
-      const user = await User.findOne({_id: req.body.id});
-      if (!user) {
-        return res.status(401).send('Cet utilisateur n\'existe pas !')
-      }
-      req.user = decoded;
-      res.send({
-        isLogged: true,
-        session: {
-           _id: user._id,
-          username: user.username,
-        }
-      })
-    } catch (error) {
-      res.status(401).send('requête impossible');
-    }
+    res.status(200).send({message: 'Utilisateur bien connecté'})
   },
+
+  // Deconnect a user
 
   logout: async (req, res) => {
-      res.send({
-        isLogged: false,
-        session: {
-          _id: "",
-          username: "",
-        }
-      })
+    console.log('je suis dans logout');
+    console.log('REQ COOKIES TOKEN LOGOUT ', req.cookies.token)
+     // delete the token stored in db
+     const user = await User.findOne({token: req.cookies.token});
+     user.token = null;
+     await user.save();
+     // clear cookie in browser
+     res.clearCookie('token').send({message: 'Utilisateur déconnecté !'})
   },
-
-  // Find pet by user's ID
-
-  findPetsByUser: async (req, res) => {
-    console.log(req.params);
-   
-  }
 }

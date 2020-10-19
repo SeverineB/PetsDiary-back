@@ -1,37 +1,37 @@
 const express = require('express');
 const router = express.Router();
-const config = require('config');
+const auth = require('../../middlewares/auth');
 
-const user = require('../../controllers/user.controller');
+const User = require('../../controllers/user.controller');
 
 // @route GET api/user
 // @desc Get all users
 
-/* router.get('/', user.findAll); */
+router.get('/users', User.findAll);
 
 // @route POST api/user
 // @desc Create new user
 
-router.post('/register', user.register);
+router.post('/register', User.register);
 
 // @route POST api/user
 // @desc Login user
 
-router.post('/login', user.login);
+router.post('/login', User.login);
 
 // @route POST api/user
 // @desc Check if user logged
 
-router.post('/isLogged', user.checkIsLogged);
-
-// @route POST api/user
-// @desc Find pets by user ID
-
-router.get('/pets/:id', user.findAllPetsOfUser);
+router.post('/isLogged', auth, User.checkIsLogged);
 
 // @route POST api/user
 // @desc Deconnect user
 
-router.post('/logout', user.logout);
+router.get('/logout', auth, User.logout);
+
+// @route POST api/user
+// @desc Get all pets of a user
+
+router.get('/:id/pets', auth, User.getAllPets);
 
 module.exports = router;

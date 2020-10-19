@@ -17,10 +17,12 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  pets: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'pets',
-  }],
+  pets: [
+    {
+    type: Schema.Types.ObjectId,
+    ref: 'pet',
+    }
+  ],
   token: {
     type: String,
   }

@@ -43,8 +43,8 @@ mongoose.connect(db,
 .catch(err => console.log(err));
 
 // use routes
-app.use('/api/pet', pets)
-app.use('/api/user', users)
+app.use('/api/pet', pets);
+app.use('/api/user', users);
 
 const port = process.env.PORT || 3001;
 const HOST = 'localhost';

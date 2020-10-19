@@ -18,17 +18,17 @@ module.exports = {
 
   // Get pets by user
 
-  findPetsByUser: async (req, res) => {
+/*   findPetsByUser: async (req, res) => {
     try {
       console.log('je suis dans le try de find pets by user');
-      const { id } = req.body;
+      const { id } = req.params;
       console.log('ID ', id)
       const pets = await Pet.find({user_id: id})
       res.send(pets)
     } catch (error) {
       res.status(500).send({message: 'Impossible de récupérer les animaux de cet utilisateur'})
     }
-  },
+  }, */
 
   // Create new pet
 
