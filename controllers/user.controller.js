@@ -97,7 +97,13 @@ module.exports = {
       }
    
       console.log('je suis avant la création du token')
-      const token = jwt.sign({ id: user._id }, 'secretkey', {expiresIn: 86400});
+      const token = jwt.sign({
+        id: user._id,
+        username: user.username
+      },
+        'secretkey',
+        {expiresIn: 86400}
+      );
 
       // store token in db
       user.token = token;
