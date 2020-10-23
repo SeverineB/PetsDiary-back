@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const config = require('config');
+const multer = require('multer');
+require('dotenv').config();
 
 const pets = require('./routes/api/pet');
 const users = require('./routes/api/user');
@@ -43,6 +45,7 @@ mongoose.connect(db,
 .catch(err => console.log(err));
 
 // use routes
+app.use('/upload/avatars', express.static(__dirname + '/upload/avatars'));
 app.use('/api/pet', pets);
 app.use('/api/user', users);
 

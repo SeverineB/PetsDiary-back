@@ -5,8 +5,7 @@ const Schema = mongoose.Schema;
 // create Schema
 const PetSchema = new Schema({
   picture: {
-    data: Buffer,
-    contentType: String
+    type: String,
   },
   user_id: {
     type: Schema.Types.ObjectId,

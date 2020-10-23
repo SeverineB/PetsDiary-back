@@ -102,7 +102,7 @@ module.exports = {
         username: user.username
       },
         'secretkey',
-        {expiresIn: 86400}
+        {expiresIn: 1000 * 60 * 60 * 24}
       );
 
       // store token in db
@@ -111,7 +111,11 @@ module.exports = {
       await user.save();
   
       // send the token in a cookie
-      res.cookie('token', token, {maxAge: 86400, httpOnly:true, path: '/'}).send({
+      res.cookie('token', token, {
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        httpOnly:true,
+        path: '/'
+      }).send({
         isLogged: true,
         session: {
           _id: user._id,
@@ -140,14 +144,15 @@ module.exports = {
       res.send(user.pets)
     }
     catch (error) {
-      res.status(401).send({message: 'Impossible de récupérer les animaux de'});
+      res.status(401).send({message: 'Impossible de récupérer les animaux de ce user'});
     }
   },
 
   // Check if a user is logged
 
   checkIsLogged: async (req, res) => {
-    res.status(200).send({message: 'Utilisateur bien connecté'})
+    console.log('REQ BODY ', req.body);
+    res.status(200).send({message: 'utilisateur bien connecté'})
   },
 
   // Deconnect a user

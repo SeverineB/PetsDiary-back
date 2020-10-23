@@ -19,11 +19,6 @@ router.post('/add', auth, Pet.addPet);
 
 router.post('/health', auth, Pet.findHealthByPet);
 
-// @route POST api/pets
-// @desc Find pets of a user
-
-/* router.get('/pets/:id', auth, Pet.findPetsByUser); */
-
 // @route DELETE api/pets/:id
 // @desc Delete a pet
 
