@@ -49,7 +49,6 @@ module.exports = {
         username,
       })
       await newUser.save();
-      /* res.send(newUser); */
       res.status(200).send({message: 'Utilisateur enregistré dans la base !'})
     } catch (error) {
       if (error.isJoi === true ) {
@@ -74,7 +73,14 @@ module.exports = {
     try {
       console.log('je suis dans login');
       const { email, password } = req.body;
-  
+
+      // validate with Joi schema
+     /*  const result = await authSchema.validateAsync(req.body);
+      const { error, value } = result;
+      if (error) {
+        res.status(401).send({message: error.message})
+      } */
+
       const user = await User.findOne({ email: email});
       if (!user) {
         console.log('je suis dans no user error')
@@ -85,7 +91,6 @@ module.exports = {
         });
       }
       else {
-      console.log('je suis dans isMatch');
       const isMatch = await bcrypt.compare(password, user.password);
   
       if (!isMatch) {
@@ -105,11 +110,11 @@ module.exports = {
         {expiresIn: 1000 * 60 * 60 * 24}
       );
 
-      // store token in db
+      // store token in db to have a double authentication check
       user.token = token;
-      console.log('USER TOKEN ', user.token)
       await user.save();
   
+      console.log('je vais envoyer le cookie');
       // send the token in a cookie
       res.cookie('token', token, {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
@@ -136,22 +141,55 @@ module.exports = {
 
   getAllPets: async (req, res) => {
     try {
-      const { id } = req.params;
-      console.log('REQ PARAMS FINDALLPETSOFUSER', req.params.id);
       console.log('je suis dans le try de findAllPetsOfUser')
-      const user = await User.findById(req.params.id).populate('pets');
-      console.log('USER ', user)
-      res.send(user.pets)
+      console.log('REQ PARAMS ID', req.params.id)
+      const user = await User.findById(req.params.id)
+      // use deep populate to retrieve all the pets of user with all the collections in ref
+      .populate({
+        path: 'pets',
+        populate: {
+          path: 'weight', 
+          model: 'weight'
+        }
+      })
+      .populate({
+        path: 'pets',
+        populate: {
+          path: 'vaccine',
+          model: 'vaccine'
+        }
+      })
+      .populate({
+        path: 'pets',
+        populate: {
+          path: 'deworming',
+          model: 'deworming'
+        }
+      })
+      .populate({
+        path: 'pets',
+        populate: {
+          path: 'antiflea',
+          model: 'antiflea'
+        }
+      })
+      const newUserPets = await Promise.all(user.pets.map(async (pet) => (
+        // add a new property to each pet with value equal to real url of each avatar
+        {...pet.toObject(),
+          avatarUrl: `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}`
+        }
+        )))
+      console.log('NEW USER PETS', newUserPets);
+      res.status(200).send(newUserPets)
     }
     catch (error) {
-      res.status(401).send({message: 'Impossible de récupérer les animaux de ce user'});
+      return res.status(400).send({message: 'Impossible de récupérer les animaux de ce user'});
     }
   },
 
   // Check if a user is logged
 
   checkIsLogged: async (req, res) => {
-    console.log('REQ BODY ', req.body);
     res.status(200).send({message: 'utilisateur bien connecté'})
   },
 
@@ -159,9 +197,9 @@ module.exports = {
 
   logout: async (req, res) => {
     console.log('je suis dans logout');
-    console.log('REQ COOKIES TOKEN LOGOUT ', req.cookies.token)
-     // delete the token stored in db
+
      const user = await User.findOne({token: req.cookies.token});
+    // delete the token stored in db
      user.token = null;
      await user.save();
      // clear cookie in browser

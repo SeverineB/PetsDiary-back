@@ -20,7 +20,7 @@ const UserSchema = new Schema({
   pets: [
     {
     type: Schema.Types.ObjectId,
-    ref: 'pet',
+    ref: 'pets',
     }
   ],
   token: {
@@ -28,4 +28,4 @@ const UserSchema = new Schema({
   }
 })
 
-module.exports = User = mongoose.model('user', UserSchema)
+module.exports = User = mongoose.model('users', UserSchema, 'users')

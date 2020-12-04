@@ -9,6 +9,11 @@ require('dotenv').config();
 
 const pets = require('./routes/api/pet');
 const users = require('./routes/api/user');
+const petDetails = require('./routes/api/pet.details');
+const weight = require('./routes/api/weight');
+const vaccine = require('./routes/api/vaccine');
+const deworming = require('./routes/api/deworming');
+const antiflea = require('./routes/api/antiflea');
 
 const app = express();
 
@@ -40,7 +45,8 @@ const db = config.get('mongoURI');
 // Connect to Mongo
 mongoose.connect(db,
   { useNewUrlParser: true,
-  useUnifiedTopology: true })
+  useUnifiedTopology: true,
+  useFindAndModify: false})
 .then(() => console.log('Connexion avec MongoDB réussie !'))
 .catch(err => console.log(err));
 
@@ -48,6 +54,17 @@ mongoose.connect(db,
 app.use('/upload/avatars', express.static(__dirname + '/upload/avatars'));
 app.use('/api/pet', pets);
 app.use('/api/user', users);
+app.use('/api/pet/details', petDetails);
+app.use('/api/pet/weight', weight);
+app.use('/api/pet/vaccine', vaccine);
+app.use('/api/pet/deworming', deworming);
+app.use('/api/pet/antiflea', antiflea);
+
+// errors handling middleware
+app.use((err, req, res, next) => {
+  console.log(err.stack);
+  res.status(500).send({message: 'Une erreur est survenue !'});
+})
 
 const port = process.env.PORT || 3001;
 const HOST = 'localhost';

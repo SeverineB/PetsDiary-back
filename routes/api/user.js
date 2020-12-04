@@ -24,12 +24,12 @@ router.post('/login', User.login);
 
 router.post('/isLogged', auth, User.checkIsLogged);
 
-// @route POST api/user
+// @route GET api/user
 // @desc Deconnect user
 
 router.get('/logout', auth, User.logout);
 
-// @route POST api/user
+// @route GET api/user
 // @desc Get all pets of a user
 
 router.get('/:id/pets', auth, User.getAllPets);

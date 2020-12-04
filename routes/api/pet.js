@@ -1,23 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../../middlewares/auth');
+const multer = require('../../middlewares/multer');
 
 const Pet = require('../../controllers/pet.controller');
 
-
-// @route GET api/pets with async await function
+// @route GET api/pet with async await function
 
 router.get('/', Pet.findAll);
 
-// @route POST api/pets
+// @route GET api/pet
+
+router.get('/:id', Pet.findById);
+
+// @route POST api/pet
 // @desc Create a pet
 
-router.post('/add', auth, Pet.addPet);
+router.post('/add', auth, multer, Pet.addPet);
 
-// @route POST api/pets
-// @desc Find health diary by pet ID
+// @route PATCH api/pet
+// @desc Update a pet
 
-router.post('/health', auth, Pet.findHealthByPet);
+router.patch('/edit/:id', auth, multer, Pet.updatePet);
 
 // @route DELETE api/pets/:id
 // @desc Delete a pet
