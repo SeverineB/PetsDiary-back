@@ -14,4 +14,9 @@ router.post('/add', auth, Deworming.addDeworming);
 
 router.put('/edit/:id', auth, Deworming.updateDeworming);
 
+// @route PUT api/pet/deworming
+// @desc Delete deworming item of a pet
+
+router.delete('/:id', auth, Deworming.deleteDeworming);
+
 module.exports = router;

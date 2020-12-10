@@ -14,4 +14,9 @@ router.post('/add', auth, Weight.addWeight);
 
 router.put('/edit/:id', auth, Weight.updateWeight);
 
+// @route PUT api/pet/weight
+// @desc Delete weight of a pet
+
+router.delete('/:id', auth, Weight.deleteWeight);
+
 module.exports = router;

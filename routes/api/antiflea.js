@@ -14,4 +14,9 @@ router.post('/add', auth, Antiflea.addAntiflea);
 
 router.put('/edit/:id', auth, Antiflea.updateAntiflea);
 
+// @route PUT api/pet/antiflea
+// @desc Delete antiflea item of a pet
+
+router.delete('/:id', auth, Antiflea.deleteAntiflea);
+
 module.exports = router;
