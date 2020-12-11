@@ -36,8 +36,6 @@ module.exports = {
 
     addPet: async (req, res) => {
         try {
-            console.log('REQ BODY ADD PET', req.body);
-            console.log('REQ FILE ADD PET', req.file);
             const { user_id, name, age, species, breed, sex, birthdate, ide } = req.body;
             const avatarPath = req.file.path;
             console.log('REQ FILE BODY', req.body);
@@ -56,12 +54,15 @@ module.exports = {
             });
             await newPet.save();
 
-            const userById = await User.findByIdAndUpdate(newPet.user_id, { $push: { pets: newPet._id}});
+            const userById = await User.findByIdAndUpdate(newPet.user_id, {
+                $push: { pets: newPet._id}
+            });
             console.log('USER BY ID ', userById);
+            console.log('NEW PET ID ', newPet._id);
 
             /* userById.pets.push(newPet); */
             await userById.save();
-
+            console.log('je suis après la sauvegarde en db');
             res.send({
             newPet,
             avatarUrl
