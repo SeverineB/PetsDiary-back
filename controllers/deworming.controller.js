@@ -49,7 +49,12 @@ module.exports = {
         try {
             const _id = req.params.id;
             const dewormingToDelete = await Deworming.findById(_id)
-            dewormingToDelete.remove()
+            
+            const petById = await Pet.findByIdAndUpdate(dewormingToDelete.pet_id, {
+                $pull: {deworming: _id}
+            })
+            await petById.save();
+            await dewormingToDelete.remove()
             res.status(204).send({message: 'Item supprimé'});
         } catch (error) {
             return res.status(400).send({message: 'Impossible de supprimer cet item de vermifuge/*0'})

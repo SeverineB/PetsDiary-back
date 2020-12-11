@@ -48,7 +48,11 @@ module.exports = {
         try {
             const _id = req.params.id;
             const antifleaToDelete = await Antiflea.findById(_id)
-            antifleaToDelete.remove()
+            const petById = await Pet.findByIdAndUpdate(antifleaToDelete.pet_id, {
+                $pull: {antiflea: _id}
+            })
+            await petById.save();
+            await antifleaToDelete.remove()
             res.status(204).send({message: 'Item supprimé'});
         } catch (error) {
             return res.status(400).send({message: 'Impossible de supprimer cet item d\'anti-puces'})

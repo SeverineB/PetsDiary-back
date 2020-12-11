@@ -35,40 +35,41 @@ module.exports = {
     // Create new pet
 
     addPet: async (req, res) => {
-    try {
-        console.log('REQ BODY ADD PET', req.body);
-        console.log('REQ FILE ADD PET', req.file);
-        const { user_id, name, age, species, breed, sex, birthdate, ide } = req.body;
-        const avatarPath = req.file.path;
-        console.log('REQ FILE PATH', req.file.path);
-        const avatarUrl = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${req.file.filename}`;
-        const newPet = await Pet.create({
-            user_id,
-            name,
-            age,
-            species,
-            breed,
-            sex,
-            birthdate,
-            ide,
-            avatarPath,
-        });
-        await newPet.save();
+        try {
+            console.log('REQ BODY ADD PET', req.body);
+            console.log('REQ FILE ADD PET', req.file);
+            const { user_id, name, age, species, breed, sex, birthdate, ide } = req.body;
+            const avatarPath = req.file.path;
+            console.log('REQ FILE BODY', req.body);
+            console.log('REQ FILE PATH', req.file.path);
+            const avatarUrl = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${req.file.filename}`;
+            const newPet = await Pet.create({
+                user_id,
+                name,
+                age,
+                species,
+                breed,
+                sex,
+                birthdate,
+                ide,
+                avatarPath,
+            });
+            await newPet.save();
 
-        const userById = await User.findById(newPet.user_id);
-        console.log('USER BY ID ', userById);
+            const userById = await User.findByIdAndUpdate(newPet.user_id, { $push: { pets: newPet._id}});
+            console.log('USER BY ID ', userById);
 
-        userById.pets.push(newPet);
-        await userById.save();
+            /* userById.pets.push(newPet); */
+            await userById.save();
 
-        res.send({
-        newPet,
-        avatarUrl
-        });
-    }
-    catch (error) {
-        return res.status(400).send({message: 'impossible de créer l\'animal'});
-    }
+            res.send({
+            newPet,
+            avatarUrl
+            });
+        }
+        catch (error) {
+            return res.status(400).send({message: 'impossible de créer l\'animal'});
+        }
     },
 
     updatePet: async (req, res) => {
@@ -90,7 +91,14 @@ module.exports = {
         try {
             const _id = req.params.id;
             const petToDelete = await Pet.findById(_id)
-            petToDelete.remove()
+
+            const userById = await User.findByIdAndUpdate(petToDelete.user_id, {
+                "$pull": {"pets": _id}
+            });
+            await userById.save();
+
+            await petToDelete.remove()
+
             res.status(204).send({message: 'Animal supprimé'});
         } catch (error) {
             return res.status(400).send({message: 'Impossible de supprimer cet animal'})

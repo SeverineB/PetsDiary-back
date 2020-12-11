@@ -48,7 +48,12 @@ module.exports = {
         try {
             const _id = req.params.id;
             const weightToDelete = await Weight.findById(_id)
-            weightToDelete.remove()
+
+            const petById = await Pet.findByIdAndUpdate(weightToDelete.pet_id, {
+                $pull: {weight: _id}
+            })
+            await petById.save();
+            await weightToDelete.remove()
             res.status(204).send({message: 'Item supprimé'});
         } catch (error) {
             return res.status(400).send({message: 'Impossible de supprimer cet item'})

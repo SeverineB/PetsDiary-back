@@ -179,7 +179,7 @@ module.exports = {
           avatarUrl: `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}`
         }
         )))
-      console.log('NEW USER PETS', newUserPets);
+      console.log('NEW USER PETS IN GET ALL PETS', newUserPets);
       res.status(200).send(newUserPets)
     }
     catch (error) {
