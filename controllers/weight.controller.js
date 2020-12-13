@@ -46,15 +46,21 @@ module.exports = {
 
     deleteWeight: async (req, res) => {
         try {
+            console.log('je suis dans delete weight')
             const _id = req.params.id;
-            const weightToDelete = await Weight.findById(_id)
+            console.log('ID TO DELETE ', _id)
 
+            const weightToDelete = await Weight.findById(_id)
+            console.log('WEIGHT TO DELETE ', weightToDelete)
             const petById = await Pet.findByIdAndUpdate(weightToDelete.pet_id, {
-                $pull: {weight: _id}
-            })
+                $pull: {weight: _id}}, {new: true}).populate({path: 'weight', model: 'weight'})
+            
             await petById.save();
             await weightToDelete.remove()
-            res.status(204).send({message: 'Item supprimé'});
+            const filteredPet = petById.populate({path: 'weight', model: 'weight'});
+            console.log('PET BY ID', petById);
+            console.log('FILTERED PET ', filteredPet);
+            res.status(200).send(filteredPet);
         } catch (error) {
             return res.status(400).send({message: 'Impossible de supprimer cet item'})
         }

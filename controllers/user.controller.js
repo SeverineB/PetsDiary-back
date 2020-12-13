@@ -26,35 +26,37 @@ module.exports = {
       // destructuring request body
       const { username, email, password } = req.body;
       if (!email || !password || !username) {
-        res.status(401).send({message: 'Tous les champs doivent être renseignés'})
+        res.status(400).send({message: 'Tous les champs doivent être renseignés'})
       }
 
       // validate with Joi schema
       const result = await authSchema.validateAsync(req.body);
       const { error, value } = result;
       if (error) {
-        res.status(401).send({message: error.message})
+        res.status(400).send({message: 'Les valeurs ne sont pas correctes'})
       }
 
       // check if email doesn't already exist on db
       const alreadyExist = await User.findOne({ email: email });
       if (alreadyExist){
-        res.status(401).send('Cet email existe déjà !').send();
+        return res.status(401).send({message: 'Cet email existe déjà !'});
       }
 
       // if everything ok create new user
       const newUser = await User.create({
-        email,
+        email: email,
         password: bcrypt.hashSync(password, 10),
-        username,
+        username: username,
       })
       await newUser.save();
-      res.status(200).send({message: 'Utilisateur enregistré dans la base !'})
+      return res.status(200).send({
+          message: 'L\'utilisateur est bien enregistré dans la base !'})
     } catch (error) {
       if (error.isJoi === true ) {
-        res.status(422, error.message).send({message: 'Les valeurs ne sont pas correctes'});
+        /* return res.status(422).send({message: 'Les valeurs ne sont pas correctes'}); */
+        return res.status(422).send({message: error.message});
       } else {
-        res.status(401, error.message).end();
+        return res.status(401).end();
       }
     }
   },
@@ -81,33 +83,27 @@ module.exports = {
         res.status(401).send({message: error.message})
       } */
 
-      const user = await User.findOne({ email: email});
+      const user = await User.findOne({ email: email });
       if (!user) {
-        console.log('je suis dans no user error')
-        res.status(401).send({ 
-          error: {
-            message: 'Mauvais email !'
-          }
+        return res.status(401).send({ 
+            message: 'L\'email n\'existe pas !'
         });
       }
-      else {
+
       const isMatch = await bcrypt.compare(password, user.password);
-  
       if (!isMatch) {
-        res.status(401).send({ 
-          error: {
-            message: 'Mauvais mot de passe !'
-          }
+        return res.status(401).send({ 
+            message: 'Le mot de passe n\est pas correct!'
         });
       }
    
-      console.log('je suis avant la création du token')
       const token = jwt.sign({
         id: user._id,
         username: user.username
       },
-        'secretkey',
-        {expiresIn: 1000 * 60 * 60 * 24}
+        process.env.PRIVATE_KEY,
+        /* {expiresIn: 1000 * 60 * 60 * 24} */
+        {expiresIn: process.env.TOKEN_EXPIRESIN}
       );
 
       // store token in db to have a double authentication check
@@ -116,7 +112,7 @@ module.exports = {
   
       console.log('je vais envoyer le cookie');
       // send the token in a cookie
-      res.cookie('token', token, {
+      return res.cookie('token', token, {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
         httpOnly:true,
         path: '/'
@@ -127,12 +123,11 @@ module.exports = {
           username: user.username,
           }
         });
-      }
+      
     }
     catch (error) {
       res.status(500).send({
-        error: {
-          message: 'Impossible d\'exécuter la requête !'}
+          message: 'Impossible d\'exécuter la requête !'
         })
     }
   },

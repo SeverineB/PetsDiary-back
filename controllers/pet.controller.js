@@ -1,5 +1,6 @@
 const Pet = require('../models/pet.model');
 const User = require('../models/user.model');
+const fs = require('fs');
 
 module.exports = {
 
@@ -60,10 +61,9 @@ module.exports = {
             console.log('USER BY ID ', userById);
             console.log('NEW PET ID ', newPet._id);
 
-            /* userById.pets.push(newPet); */
             await userById.save();
             console.log('je suis après la sauvegarde en db');
-            res.send({
+            res.status(200).send({
             newPet,
             avatarUrl
             });
@@ -92,10 +92,18 @@ module.exports = {
         try {
             const _id = req.params.id;
             const petToDelete = await Pet.findById(_id)
+            fs.unlink(petToDelete.avatarPath, (error) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('fichier supprimé en file system')
+                }
+            })
 
             const userById = await User.findByIdAndUpdate(petToDelete.user_id, {
-                "$pull": {"pets": _id}
-            });
+                $pull: {pets: _id}
+            },
+            {new: true});
             await userById.save();
 
             await petToDelete.remove()
