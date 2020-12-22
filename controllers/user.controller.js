@@ -102,8 +102,8 @@ module.exports = {
         username: user.username
       },
         process.env.PRIVATE_KEY,
-        /* {expiresIn: 1000 * 60 * 60 * 24} */
-        {expiresIn: process.env.TOKEN_EXPIRESIN}
+        {expiresIn: 1000 * 60 * 60 * 24}
+        /* {expiresIn: process.env.TOKEN_EXPIRESIN} */
       );
 
       // store token in db to have a double authentication check

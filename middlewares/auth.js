@@ -10,7 +10,7 @@ const token = req.cookies.token;
 
   try {
     const user = await User.findOne({token: req.cookies.token});
-    const decoded = jwt.verify(token, 'secretkey');
+    const decoded = jwt.verify(token,  process.env.PRIVATE_KEY);
     if (req.cookies.token === user.token) {
       console.log('C\'est le bon utilisateur');
       req.user = decoded;
