@@ -10,20 +10,26 @@ module.exports = {
         const weights = await Pet.findById(req.body.id)
         res.status(200).send(weights)
         } catch (error) {
-        return res.status(400).send({message: 'Impossible de récupérer les données de cet animal'})
+            return res.status(400).send({message: 'Impossible de récupérer les données de cet animal'})
         }
     },
 
     addWeight: async (req, res) => {
         try {
+            const { pet_id, weightValue, weightDate } = req.body;
+            if (!pet_id|| !weightValue || ! weightDate) {
+                return res.status(400).send({message: 'Tous les champs doivent être renseignés'})
+            }
+            
             const newWeight = await Weight.create({
-                pet_id: req.body.pet_id,
-                weightValue: req.body.weightValue,
-                weightDate: req.body.weightDate
+                pet_id,
+                weightValue,
+                weightDate
             });
             console.log('REQ BODY IN WEIGHT', req.body)
-            /* const petById = await Pet.findOneAndUpdate({_id: newWeight.pet_id}, {weight: newWeight}, {new: true}); */
-            const petById = await Pet.findByIdAndUpdate(newWeight.pet_id, { $push: { weight: newWeight._id}})
+            const petById = await Pet.findByIdAndUpdate(newWeight.pet_id, {
+                $push: { weight: newWeight._id}}, {new: true}).populate({path: 'weight', model: 'weight'})
+            console.log('PET BY ID AFTER ADD WEIGHT ', petById);
             await petById.save();
             res
             .status(200)
@@ -36,11 +42,10 @@ module.exports = {
     updateWeight: async (req, res) => {
         const id = req.params.id;
         try {
-        const weightToUpdate = await Weight.findByIdAndUpdate(id, req.body);
-
-        res.status(200).send(weightToUpdate);
+            const weightToUpdate = await Weight.findByIdAndUpdate(id, req.body);
+            return res.status(200).send(weightToUpdate);
         } catch (error) {
-        res.status(400).send({message: 'Impossible de mettre à jour cet item de poids'})
+            return res.status(400).send({message: 'Impossible de mettre à jour cet item de poids'})
         }
     },
 
@@ -48,17 +53,14 @@ module.exports = {
         try {
             console.log('je suis dans delete weight')
             const _id = req.params.id;
-            console.log('ID TO DELETE ', _id)
 
             const weightToDelete = await Weight.findById(_id)
-            console.log('WEIGHT TO DELETE ', weightToDelete)
             const petById = await Pet.findByIdAndUpdate(weightToDelete.pet_id, {
                 $pull: {weight: _id}}, {new: true}).populate({path: 'weight', model: 'weight'})
             
             await petById.save();
-            await weightToDelete.remove()
+            await weightToDelete.remove();
             const filteredPet = petById.populate({path: 'weight', model: 'weight'});
-            console.log('PET BY ID', petById);
             console.log('FILTERED PET ', filteredPet);
             res.status(200).send(filteredPet);
         } catch (error) {

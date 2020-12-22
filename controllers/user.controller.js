@@ -1,203 +1,193 @@
-const User = require('../models/user.model');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { authSchema } = require('../validations/users');
+    const User = require('../models/user.model');
+    const jwt = require('jsonwebtoken');
+    const bcrypt = require('bcryptjs');
+    const { authSchema } = require('../validations/users');
 
-module.exports = {
+    module.exports = {
 
-  // Get all the users
-  // Use async await functions
+    // Get all the users
 
-  findAll: async (req, res) => {
-    console.log('je suis dans find user');
-    try {
-      const users = await User.find({})
-      res.send(users)
-    } catch (error) {
-      res.status(500).send()
-    }
-  },
-
-  // Create new user
-
-  register: async (req, res) => {
-    console.log('je suis dans REGISTER');
-    try {
-      // destructuring request body
-      const { username, email, password } = req.body;
-      if (!email || !password || !username) {
-        res.status(400).send({message: 'Tous les champs doivent être renseignés'})
-      }
-
-      // validate with Joi schema
-      const result = await authSchema.validateAsync(req.body);
-      const { error, value } = result;
-      if (error) {
-        res.status(400).send({message: 'Les valeurs ne sont pas correctes'})
-      }
-
-      // check if email doesn't already exist on db
-      const alreadyExist = await User.findOne({ email: email });
-      if (alreadyExist){
-        return res.status(401).send({message: 'Cet email existe déjà !'});
-      }
-
-      // if everything ok create new user
-      const newUser = await User.create({
-        email: email,
-        password: bcrypt.hashSync(password, 10),
-        username: username,
-      })
-      await newUser.save();
-      return res.status(200).send({
-          message: 'L\'utilisateur est bien enregistré dans la base !'})
-    } catch (error) {
-      if (error.isJoi === true ) {
-        /* return res.status(422).send({message: 'Les valeurs ne sont pas correctes'}); */
-        return res.status(422).send({message: error.message});
-      } else {
-        return res.status(401).end();
-      }
-    }
-  },
-
-  // Find user by ID
-
-  findById: async (req, res) => {
-    const user = await User.findById(req.params.id);
-    res.send(user);
-  },
-
-  // Connect a user
-
-  login: async (req, res) => {
-
-    try {
-      console.log('je suis dans login');
-      const { email, password } = req.body;
-
-      // validate with Joi schema
-     /*  const result = await authSchema.validateAsync(req.body);
-      const { error, value } = result;
-      if (error) {
-        res.status(401).send({message: error.message})
-      } */
-
-      const user = await User.findOne({ email: email });
-      if (!user) {
-        return res.status(401).send({ 
-            message: 'L\'email n\'existe pas !'
-        });
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(401).send({ 
-            message: 'Le mot de passe n\est pas correct!'
-        });
-      }
-   
-      const token = jwt.sign({
-        id: user._id,
-        username: user.username
-      },
-        process.env.PRIVATE_KEY,
-        /* {expiresIn: 1000 * 60 * 60 * 24} */
-        {expiresIn: process.env.TOKEN_EXPIRESIN}
-      );
-
-      // store token in db to have a double authentication check
-      user.token = token;
-      await user.save();
-  
-      console.log('je vais envoyer le cookie');
-      // send the token in a cookie
-      return res.cookie('token', token, {
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-        httpOnly:true,
-        path: '/'
-      }).send({
-        isLogged: true,
-        session: {
-          _id: user._id,
-          username: user.username,
-          }
-        });
-      
-    }
-    catch (error) {
-      res.status(500).send({
-          message: 'Impossible d\'exécuter la requête !'
-        })
-    }
-  },
-
-  // Find all the pets of a user
-
-  getAllPets: async (req, res) => {
-    try {
-      console.log('je suis dans le try de findAllPetsOfUser')
-      console.log('REQ PARAMS ID', req.params.id)
-      const user = await User.findById(req.params.id)
-      // use deep populate to retrieve all the pets of user with all the collections in ref
-      .populate({
-        path: 'pets',
-        populate: {
-          path: 'weight', 
-          model: 'weight'
+    findAll: async (req, res) => {
+        try {
+            const users = await User.find({})
+            return res.send(users)
+        } catch (error) {
+            return res.status(500).send()
         }
-      })
-      .populate({
-        path: 'pets',
-        populate: {
-          path: 'vaccine',
-          model: 'vaccine'
+    },
+
+    // Create new user
+
+    register: async (req, res) => {
+        console.log('je suis dans REGISTER');
+        try {
+            const { username, email, password } = req.body;
+            if (!email || !password || !username) {
+                return res.status(400).send({message: 'Tous les champs doivent être renseignés'})
+            }
+
+            // validate with Joi schema
+            const result = await authSchema.validateAsync(req.body);
+            const { error, value } = result;
+                if (error) {
+                    return res.status(400).send({message: 'Les valeurs ne sont pas correctes'})
+                }
+
+            const alreadyExist = await User.findOne({ email: email });
+                if (alreadyExist){
+                    return res.status(401).send({message: 'Cet email existe déjà !'});
+                }
+
+            const newUser = await User.create({
+                email: email,
+                password: bcrypt.hashSync(password, 10),
+                username: username,
+            })
+            await newUser.save();
+
+            return res.status(200).send({
+                message: 'L\'utilisateur est bien enregistré dans la base !'
+            })
+        } catch (error) {
+            if (error.isJoi === true ) {
+                return res.status(400).send({message: error.message});
+            } else {
+                return res.status(401).end();
+            }
         }
-      })
-      .populate({
-        path: 'pets',
-        populate: {
-          path: 'deworming',
-          model: 'deworming'
+    },
+
+    // Find user by ID
+
+    findById: async (req, res) => {
+        const user = await User.findById(req.params.id);
+        res.send(user);
+    },
+
+    // Connect a user
+
+    login: async (req, res) => {
+        try {
+            const { email, password } = req.body;
+
+            // validate with Joi schema
+            /*  const result = await authSchema.validateAsync(req.body);
+            const { error, value } = result;
+            if (error) {
+                res.status(401).send({message: error.message})
+            } */
+
+            const user = await User.findOne({ email: email });
+                if (!user) {
+                    return res.status(401).send({ 
+                        message: 'L\'email n\'existe pas !'
+                    });
+                }
+
+            const isMatch = await bcrypt.compare(password, user.password);
+                if (!isMatch) {
+                    return res.status(401).send({ 
+                        message: 'Le mot de passe n\est pas correct!'
+                    });
+                }
+        
+            const token = jwt.sign({
+                id: user._id,
+                username: user.username
+            },
+                'secretkey',
+                /* {expiresIn: 1000 * 60 * 60 * 24} */
+                {expiresIn: process.env.TOKEN_EXPIRESIN}
+            );
+
+            // store token in db to have a double authentication check
+            user.token = token;
+            await user.save();
+        
+            // send the token in a cookie
+            return res.cookie('token', token, {
+                expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+                httpOnly:true,
+                path: '/'
+            }).send({
+                isLogged: true,
+                session: {
+                _id: user._id,
+                username: user.username,
+                }
+                });
+            
+            }
+        catch (error) {
+            return res.status(500).send({
+                message: 'Impossible d\'exécuter la requête !'
+            })
         }
-      })
-      .populate({
-        path: 'pets',
-        populate: {
-          path: 'antiflea',
-          model: 'antiflea'
+    },
+
+    // Find all the pets of a user
+
+    getAllPets: async (req, res) => {
+        try {
+
+            const user = await User.findById(req.params.id)
+            // use deep populate to retrieve all the pets of user with all the collections in ref
+            .populate({
+                path: 'pets',
+                populate: {
+                path: 'weight', 
+                model: 'weight'
+                }
+            })
+            .populate({
+                path: 'pets',
+                populate: {
+                path: 'vaccine',
+                model: 'vaccine'
+                }
+            })
+            .populate({
+                path: 'pets',
+                populate: {
+                path: 'deworming',
+                model: 'deworming'
+                }
+            })
+            .populate({
+                path: 'pets',
+                populate: {
+                path: 'antiflea',
+                model: 'antiflea'
+                }
+            })
+            const newUserPets = await Promise.all(user.pets.map(async (pet) => (
+                // add a new property to each pet with value equal to real url of each avatar
+                {...pet.toObject(),
+                avatarUrl: `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}`
+                }
+                )))
+
+            return res.status(200).send(newUserPets)
         }
-      })
-      const newUserPets = await Promise.all(user.pets.map(async (pet) => (
-        // add a new property to each pet with value equal to real url of each avatar
-        {...pet.toObject(),
-          avatarUrl: `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}`
+        catch (error) {
+            return res.status(400).send({message: 'Impossible de récupérer les animaux de ce user'});
         }
-        )))
-      console.log('NEW USER PETS IN GET ALL PETS', newUserPets);
-      res.status(200).send(newUserPets)
-    }
-    catch (error) {
-      return res.status(400).send({message: 'Impossible de récupérer les animaux de ce user'});
-    }
-  },
+    },
 
-  // Check if a user is logged
+    // Check if a user is logged
 
-  checkIsLogged: async (req, res) => {
-    res.status(200).send({message: 'utilisateur bien connecté'})
-  },
+    checkIsLogged: async (req, res) => {
+        return res.status(200).send({message: 'utilisateur bien connecté'})
+    },
 
-  // Deconnect a user
+    // Deconnect a user
 
-  logout: async (req, res) => {
-    console.log('je suis dans logout');
+    logout: async (req, res) => {
+        console.log('je suis dans logout');
 
-     const user = await User.findOne({token: req.cookies.token});
-    // delete the token stored in db
-     user.token = null;
-     await user.save();
-     // clear cookie in browser
-     res.clearCookie('token').send({message: 'Utilisateur déconnecté !'})
-  },
+        const user = await User.findOne({token: req.cookies.token});
+        user.token = null;
+        await user.save();
+        return res.clearCookie('token').send({message: 'Utilisateur déconnecté !'})
+    },
 }
