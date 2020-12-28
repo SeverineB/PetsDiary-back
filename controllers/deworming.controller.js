@@ -24,7 +24,8 @@ module.exports = {
         console.log('REQ BODY IN ADD DEWORMING', req.body)
     
         // find the pet and add new deorming item in deworming array
-        const petById = await Pet.findByIdAndUpdate(newDeworming.pet_id, { $push: { deworming: newDeworming._id}})
+        const petById = await Pet.findByIdAndUpdate(newDeworming.pet_id, {
+            $push: { deworming: newDeworming._id}}, {new: true}).populate({path: 'deworming', model: 'deworming'})
         await petById.save();
         res
         .status(200)
@@ -51,11 +52,11 @@ module.exports = {
             const dewormingToDelete = await Deworming.findById(_id)
             
             const petById = await Pet.findByIdAndUpdate(dewormingToDelete.pet_id, {
-                $pull: {deworming: _id}
-            })
+                $pull: {deworming: _id}}, {new: true}).populate({path: 'deworming', model: 'deworming'})
             await petById.save();
             await dewormingToDelete.remove()
-            res.status(204).send({message: 'Item supprimé'});
+            const filteredPet = petById.populate({path: 'deworming', model: 'deworming'});
+            res.status(200).send(filteredPet);
         } catch (error) {
             return res.status(400).send({message: 'Impossible de supprimer cet item de vermifuge/*0'})
         }

@@ -23,13 +23,14 @@ module.exports = {
         });
         
         // find the pet and add new vaccine item in vaccine array with $push
-        const petById = await Pet.findByIdAndUpdate(newVaccine.pet_id, { $push: { vaccine: newVaccine._id}})
+        const petById = await Pet.findByIdAndUpdate(newVaccine.pet_id, {
+            $push: { vaccine: newVaccine._id}}, {new: true}).populate({path: 'vaccine', model: 'vaccine'})
         await petById.save();
         res
         .status(200)
         .send(petById)
         } catch (error) {
-        return res.status(400).send({message: 'Les données sont manquantes ou ne sont pas au bon format'})
+            return res.status(400).send({message: 'Impossible d\'ajouter ce vaccin'})
         }
     },
 
@@ -40,7 +41,7 @@ module.exports = {
 
         res.status(200).send(vaccineToUpdate);
         } catch (error) {
-        res.status(400).send({message: 'Impossible de mettre à jour cet item de vaccin'})
+        res.status(400).send({message: 'Impossible de mettre à jour ce vaccin'})
         }
     },
 
@@ -55,7 +56,7 @@ module.exports = {
             await vaccineToDelete.remove()
             res.status(204).send({message: 'Item supprimé'});
         } catch (error) {
-            return res.status(400).send({message: 'Impossible de supprimer cet item de vaccin'})
+            return res.status(400).send({message: 'Impossible de supprimer ce vaccin'})
         }
     }
 }
