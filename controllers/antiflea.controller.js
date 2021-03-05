@@ -48,15 +48,18 @@ module.exports = {
     deleteAntiflea: async (req, res) => {
         try {
             const _id = req.params.id;
+
             const antifleaToDelete = await Antiflea.findById(_id)
             const petById = await Pet.findByIdAndUpdate(antifleaToDelete.pet_id, {
                 $pull: {antiflea: _id}}, {new: true}).populate({path: 'antiflea', model: 'antiflea'})
+            
             await petById.save();
-            await antifleaToDelete.remove()
+            await antifleaToDelete.remove();
             const filteredPet = petById.populate({path: 'antiflea', model: 'antiflea'});
-            res.status(204).send(filteredPet);
+            console.log('FILTERED PET ', filteredPet);
+            res.status(200).send(filteredPet);
         } catch (error) {
-            return res.status(400).send({message: 'Impossible de supprimer cet item d\'anti-puces'})
+            return res.status(400).send({message: 'Impossible de supprimer cet item'})
         }
     }
 }

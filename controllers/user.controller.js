@@ -68,6 +68,7 @@
 
     login: async (req, res) => {
         try {
+            /* const { email, password } = req.body; */
             const { email, password } = req.body;
 
             // validate with Joi schema
@@ -80,7 +81,7 @@
             const user = await User.findOne({ email: email });
                 if (!user) {
                     return res.status(401).send({ 
-                        message: 'L\'email n\'existe pas !'
+                        message: 'L\'utilisateur n\'existe pas !'
                     });
                 }
 
@@ -96,8 +97,8 @@
                 username: user.username
             },
                 'secretkey',
-                /* {expiresIn: 1000 * 60 * 60 * 24} */
-                {expiresIn: process.env.TOKEN_EXPIRESIN}
+                {expiresIn: 1000 * 60 * 60 * 24}
+                /* {expiresIn: process.env.TOKEN_EXPIRESIN} */
             );
 
             // store token in db to have a double authentication check
@@ -115,8 +116,7 @@
                 _id: user._id,
                 username: user.username,
                 }
-                });
-            
+            });
             }
         catch (error) {
             return res.status(500).send({

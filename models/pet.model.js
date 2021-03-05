@@ -34,9 +34,9 @@ const PetSchema = new Schema({
     type: Date,
   },
   ide: {
-    type: Number,
-    min: [000000000000001, 'IDE doit être composé de 15 chiffres'],
-    max: [999999999999999, 'IDE doit être composé de 15 chiffres']
+    type: String,
+   /*  min: [000000000000001, 'IDE doit être composé de 15 chiffres'],
+    max: [999999999999999, 'IDE doit être composé de 15 chiffres'] */
   },
   weight: [
     {

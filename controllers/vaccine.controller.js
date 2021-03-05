@@ -47,16 +47,20 @@ module.exports = {
 
     deleteVaccine: async (req, res) => {
         try {
+            console.log('je suis dans delete vaccine')
             const _id = req.params.id;
+
             const vaccineToDelete = await Vaccine.findById(_id)
             const petById = await Pet.findByIdAndUpdate(vaccineToDelete.pet_id, {
-                $pull: {vaccine: _id}
-            })
+                $pull: {vaccine: _id}}, {new: true}).populate({path: 'vaccine', model: 'vaccine'})
+            
             await petById.save();
-            await vaccineToDelete.remove()
-            res.status(204).send({message: 'Item supprimé'});
+            await vaccineToDelete.remove();
+            const filteredPet = petById.populate({path: 'vaccine', model: 'vaccine'});
+            console.log('FILTERED PET ', filteredPet);
+            res.status(200).send(filteredPet);
         } catch (error) {
-            return res.status(400).send({message: 'Impossible de supprimer ce vaccin'})
+            return res.status(400).send({message: 'Impossible de supprimer cet item'})
         }
     }
 }

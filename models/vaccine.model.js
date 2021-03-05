@@ -8,8 +8,12 @@ const VaccineSchema = new Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'pets'
     },
-    vaccineDate: Date,
-    vaccineName: String
+    vaccineDate: {
+        type: Date,
+        required: true},
+    vaccineName: {
+        type: String,
+        required: true}
 });
 
 module.exports = Vaccine = mongoose.model('vaccine', VaccineSchema, 'vaccine')

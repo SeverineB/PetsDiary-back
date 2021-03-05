@@ -8,8 +8,13 @@ const AntifleaSchema = new Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'pets'
     },
-    antifleaDate: Date,
-    antifleaName: String
+    antifleaDate: {
+        type: Date,
+        required: true},
+    antifleaName: {
+        type: String,
+        required: true
+    }
 });
 
 module.exports = Antiflea = mongoose.model('antiflea', AntifleaSchema, 'antiflea')

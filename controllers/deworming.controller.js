@@ -49,16 +49,18 @@ module.exports = {
     deleteDeworming: async (req, res) => {
         try {
             const _id = req.params.id;
+
             const dewormingToDelete = await Deworming.findById(_id)
-            
             const petById = await Pet.findByIdAndUpdate(dewormingToDelete.pet_id, {
                 $pull: {deworming: _id}}, {new: true}).populate({path: 'deworming', model: 'deworming'})
+            
             await petById.save();
-            await dewormingToDelete.remove()
+            await dewormingToDelete.remove();
             const filteredPet = petById.populate({path: 'deworming', model: 'deworming'});
+            console.log('FILTERED PET ', filteredPet);
             res.status(200).send(filteredPet);
         } catch (error) {
-            return res.status(400).send({message: 'Impossible de supprimer cet item de vermifuge/*0'})
+            return res.status(400).send({message: 'Impossible de supprimer cet item'})
         }
     }
 }

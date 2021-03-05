@@ -75,13 +75,26 @@ module.exports = {
 
     updatePet: async (req, res) => {
         console.log('PET ID TO UPDATE', req.body);
+        console.log('PET ID TO UPDATE', req.file);
         const datas = req.body;
+        const avatarPath = req.file.path;
         const id = req.params.id;
 
         try {
-            const petToUpdate = await Pet.findByIdAndUpdate(id, datas);
+            const petToUpdate = await Pet.findByIdAndUpdate(id, {
+                avatarPath: req.file.path,
+                name: req.body.name,
+                age: req.body.age,
+                species: req.body.species,
+                breed: req.body.breed,
+                birthdate: req.body.birthdate,
+                ide: req.body.ide,
+            });
+            const avatarUrl = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${req.file.filename}`;
+            const petToSend = await Pet.findById(id);
             console.log('pet to update', petToUpdate);
-            res.status(201).send(petToUpdate);
+            console.log('pet to send', petToSend);
+            res.status(201).send(petToSend);
         }
         catch (error) {
             return res.status(400).send({message: 'Impossible de modifier les infos de cet animal'});
