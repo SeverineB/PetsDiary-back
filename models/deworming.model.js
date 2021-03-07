@@ -8,8 +8,12 @@ const DewormingSchema = new Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'pets'
     },
-    dewormingDate: Date,
-    dewormingName: String
+    dewormingDate: {
+        type: Date,
+        required: true},
+    dewormingName: {
+        type: String,
+        required: true}
 });
 
 module.exports = Deworming = mongoose.model('deworming', DewormingSchema, 'deworming')

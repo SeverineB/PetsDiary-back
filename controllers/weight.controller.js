@@ -61,7 +61,6 @@ module.exports = {
             await petById.save();
             await weightToDelete.remove();
             const filteredPet = petById.populate({path: 'weight', model: 'weight'});
-            console.log('FILTERED PET ', filteredPet);
             res.status(200).send(filteredPet);
         } catch (error) {
             return res.status(400).send({message: 'Impossible de supprimer cet item'})

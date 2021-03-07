@@ -34,4 +34,9 @@ router.get('/logout', auth, User.logout);
 
 router.get('/:id/pets', auth, User.getAllPets);
 
+// @route GET api/user
+// @desc Get all events of a user
+
+router.get('/:id/events', auth, User.getAllEvents);
+
 module.exports = router;

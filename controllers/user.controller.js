@@ -174,6 +174,24 @@
         }
     },
 
+    // Find all the events of a user
+
+    getAllEvents: async (req, res) => {
+        try {
+
+            const user = await User.findById(req.params.id).populate('events')
+
+            const userEvents = await Promise.all(user.events.map(async (event) => {
+                return event;
+            }))
+
+            return res.status(200).send(userEvents)
+        }
+        catch (error) {
+            return res.status(400).send({message: 'Impossible de récupérer les évènements de ce user'});
+        }
+    },
+
     // Check if a user is logged
 
     checkIsLogged: async (req, res) => {

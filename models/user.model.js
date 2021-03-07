@@ -23,6 +23,12 @@ const UserSchema = new Schema({
     ref: 'pets',
     }
   ],
+  events: [
+    {
+    type: Schema.Types.ObjectId,
+    ref: 'events',
+    }
+  ],
   token: {
     type: String,
   }

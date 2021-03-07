@@ -57,7 +57,6 @@ module.exports = {
             await petById.save();
             await dewormingToDelete.remove();
             const filteredPet = petById.populate({path: 'deworming', model: 'deworming'});
-            console.log('FILTERED PET ', filteredPet);
             res.status(200).send(filteredPet);
         } catch (error) {
             return res.status(400).send({message: 'Impossible de supprimer cet item'})

@@ -13,6 +13,7 @@ const weight = require('./routes/api/weight');
 const vaccine = require('./routes/api/vaccine');
 const deworming = require('./routes/api/deworming');
 const antiflea = require('./routes/api/antiflea');
+const events = require('./routes/api/event');
 
 const app = express();
 
@@ -57,6 +58,7 @@ app.use('/api/pet/weight', weight);
 app.use('/api/pet/vaccine', vaccine);
 app.use('/api/pet/deworming', deworming);
 app.use('/api/pet/antiflea', antiflea);
+app.use('/api/event', events);
 
 // errors handling middleware
 app.use((err, req, res, next) => {

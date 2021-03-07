@@ -12,7 +12,7 @@ module.exports = {
             .populate('weight')
             .populate('vaccine')
             .populate('deworming')
-            .populate('antiflea');
+            .populate('antiflea')
             console.log('PETS FIND ALL', pets)
             res.send(pets)
         } catch (error) {
