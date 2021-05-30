@@ -23,7 +23,7 @@ router.post('/add', auth, multer, Event.addEvent);
 
 router.put('/edit/:id', auth, Event.updateEvent);
 
-// @route DELETE api/event/:id
+// @route DELETE api/event
 // @desc Delete a event
 
 router.delete('/:id', auth, Event.deleteEvent);
