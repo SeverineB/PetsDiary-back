@@ -15,13 +15,12 @@ module.exports = {
         }
     },
 
-    // Find pet by ID
+    // Find event by ID
 
     findById: async (req, res) => {
         try {
         const event = await Event
         .findById(req.params.id)
-        console.log('EVENTS FIND ONE', event)
         res.send(event);
         } catch (error) {
             return res.status(404).send({message: 'Impossible de récupérer cet évènement'})
@@ -30,23 +29,25 @@ module.exports = {
 
     addEvent: async (req, res) => {
         try {
-            const { user_id, startDate, endDate, name, address } = req.body;
-            if (!user_id || !startDate || !endDate || !name || !address) {
+            const { user_id, start, end, title, address, pet_id } = req.body;
+            if (!user_id || !start || !end || !title || !address || !pet_id) {
                 return res.status(400).send({message: 'Tous les champs doivent être renseignés'})
             }
             
             const newEvent = await Event.create({
                 user_id,
-                startDate,
-                endDate,
-                name,
-                address
-            });
-            console.log('REQ BODY IN EVENT', req.body)
+                start,
+                end,
+                title,
+                address,
+                pet_id
+            })
             const userById = await User.findByIdAndUpdate(newEvent.user_id, {
                 $push: { events: newEvent._id}})
-            console.log('PET BY ID AFTER ADD EVENT ', userById);
             await userById.save();
+            const petById = await Pet.findByIdAndUpdate(newEvent.pet_id, {
+                $push: { events: newEvent._id}})
+            await petById.save();
             res
             .status(200)
             .send(newEvent)
@@ -56,10 +57,10 @@ module.exports = {
     },
 
     updateEvent: async (req, res) => {
-        const id = req.params.id;
+        const id = req.params.id
         try {
-            const eventToUpdate = await Event.findByIdAndUpdate(id, req.body);
-            return res.status(200).send(eventToUpdate);
+            const eventToUpdate = await Event.findByIdAndUpdate(id, req.body)
+            return res.status(200).send(eventToUpdate)
         } catch (error) {
             return res.status(400).send({message: 'Impossible de mettre à jour cet évènement'})
         }
@@ -67,17 +68,16 @@ module.exports = {
 
     deleteEvent: async (req, res) => {
         try {
-            console.log('je suis dans delete event')
-            const _id = req.params.id;
+            const _id = req.params.id
 
             const eventToDelete = await Event.findById(_id)
             const petById = await Pet.findByIdAndUpdate(eventToDelete.pet_id, {
                 $pull: {event: _id}}, {new: true}).populate({path: 'event', model: 'event'})
             
-            await petById.save();
-            await eventToDelete.remove();
-            const filteredPet = petById.populate({path: 'event', model: 'event'});
-            res.status(200).send(filteredPet);
+            await petById.save()
+            await eventToDelete.remove()
+            const filteredPet = petById.populate({path: 'event', model: 'event'})
+            res.status(200).send(filteredPet)
         } catch (error) {
             return res.status(400).send({message: 'Impossible de supprimer cet évènement'})
         }

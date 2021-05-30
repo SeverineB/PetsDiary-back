@@ -5,20 +5,24 @@ const Schema = mongoose.Schema;
 // create Schema
 const EventSchema = new Schema({
     user_id: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'users'
     },
-    startDate: {
+    start: {
         type: Date,
         required: true},
-    endDate: {
+    end: {
         type: Date,
         required: true},
-    name: {
+    title: {
         type: String,
         required: true},
     address: {
-        type: String}
+        type: String},
+    pet_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'pets'
+    },
 });
 
 module.exports = Event = mongoose.model('events', EventSchema, 'events')

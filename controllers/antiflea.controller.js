@@ -20,8 +20,7 @@ module.exports = {
                 pet_id: req.body.pet_id,
                 antifleaDate: req.body.antifleaDate,
                 antifleaName: req.body.antifleaName
-            });
-            console.log('REQ BODY IN ADD ANTIFLEA', req.body)
+            })
         
             // find the pet and add new antiflea item in antiflea array
             const petById = await Pet.findByIdAndUpdate(newAntiflea.pet_id, {
@@ -53,11 +52,10 @@ module.exports = {
             const petById = await Pet.findByIdAndUpdate(antifleaToDelete.pet_id, {
                 $pull: {antiflea: _id}}, {new: true}).populate({path: 'antiflea', model: 'antiflea'})
             
-            await petById.save();
-            await antifleaToDelete.remove();
-            const filteredPet = petById.populate({path: 'antiflea', model: 'antiflea'});
-            console.log('FILTERED PET ', filteredPet);
-            res.status(200).send(filteredPet);
+            await petById.save()
+            await antifleaToDelete.remove()
+            const filteredPet = petById.populate({path: 'antiflea', model: 'antiflea'})
+            res.status(200).send(filteredPet)
         } catch (error) {
             return res.status(400).send({message: 'Impossible de supprimer cet item'})
         }

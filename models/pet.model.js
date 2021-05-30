@@ -62,6 +62,12 @@ const PetSchema = new Schema({
     ref: 'antiflea'
   }
 ],
+events: [
+    {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'events'
+  }
+],
 });
 
 module.exports = Pet = mongoose.model('pets', PetSchema, 'pets')

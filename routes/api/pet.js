@@ -13,6 +13,11 @@ router.get('/', Pet.findAll);
 
 router.get('/:id', Pet.findById);
 
+// @route GET api/pet/:id
+// @desc Get all the events of a pet
+
+router.get('/:id/events', Pet.getAllEvents);
+
 // @route POST api/pet
 // @desc Create a pet
 
