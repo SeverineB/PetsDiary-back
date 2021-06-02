@@ -48,9 +48,15 @@ mongoose.connect(db,
   useUnifiedTopology: true,
   useFindAndModify: false})
 .then(() => console.log('Connexion avec MongoDB réussie !'))
-.catch(err => console.log(err));
+.catch(err => {
+    console.log('Erreur lors de la connexion à la database')
+    console.log(err)
+});
 
 // use routes
+app.get('/', (req, res) => {
+    res.send('Ici le super serveur de Pets Diary')
+})
 app.use('/upload/avatars', express.static(__dirname + '/upload/avatars'));
 app.use('/api/pet', pets);
 app.use('/api/user', users);
@@ -66,7 +72,8 @@ app.use((err, req, res, next) => {
   res.status(500).send({message: 'Une erreur est survenue !'});
 })
 
-const port = process.env.PORT || 3001;
+const port = 3000;
 const HOST = 'localhost';
 
-app.listen(port, HOST, () => console.log(`Serveur lancé sur le port ${port}`));
+app.listen(port, () => {
+    console.log(`Serveur lancé sur le port ${port}`)});

@@ -1,13 +1,15 @@
-FROM node:10
-# Create app directory
-WORKDIR /usr/src/app
-# Install app dependencies
-COPY package*.json ./
+FROM node:12.18-alpine
 
-RUN npm install
-# Copy app source code
+RUN npm install -g nodemon
+
+WORKDIR /usr/src/app
+
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+
+RUN npm install --production --silent && mv node_modules ../
+
 COPY . .
 
-#Expose port and start application
-EXPOSE 8080
-CMD [ "npm", "server" ]
+EXPOSE 3000
+
+CMD ["npm", "run", "server"]
