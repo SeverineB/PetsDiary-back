@@ -34,7 +34,7 @@
                 if (error) {
                     return res.status(400).send({message: 'Les valeurs ne sont pas correctes'})
                 }
-            console.log('je suis juste avant la création');
+
             const alreadyExist = await User.findOne({ email: email })
                 if (alreadyExist){
                     return res.status(401).send({message: 'Cet email existe déjà !'})
@@ -109,7 +109,7 @@
             // store token in db to have a double authentication check
             user.token = token
             await user.save()
-            console.log('token after save', token)
+
             // send the token in a cookie
             return res.cookie('token', token, {
                 expires: new Date(Date.now() + 1000 * 60 * 60 * 24),

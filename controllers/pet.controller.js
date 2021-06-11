@@ -38,7 +38,8 @@ module.exports = {
         try {
             const { user_id, name, age, species, breed, sex, birthdate, ide } = req.body
             const avatarPath = req.file.path
-            const avatarUrl = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${req.file.filename}`
+          const avatarUrl = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${req.file.filename}`
+          console.log('avatar url est', avatarUrl)
             const newPet = await Pet.create({
                 user_id,
                 name,
