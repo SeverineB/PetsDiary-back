@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user.model')
 
 const auth = async (req, res, next) => {
+console.log('cookies', req.cookies.token)
 
 const token = req.cookies.token
 
@@ -10,7 +11,7 @@ const token = req.cookies.token
 
   try {
     const user = await User.findOne({token: req.cookies.token})
-    const decoded = jwt.verify(token,  'secretkey')
+    const decoded = jwt.verify(token,  process.env.PRIVATE_KEY)
     if (req.cookies.token === user.token) {
       req.user = decoded
       next()

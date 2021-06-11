@@ -22,6 +22,8 @@
         console.log('je suis dans REGISTER');
         try {
             const { username, email, password } = req.body;
+            console.log('valeurs saisies', username + email + password);
+
             if (!email || !password || !username) {
                 return res.status(400).send({message: 'Tous les champs doivent être renseignés'})
             }
@@ -32,7 +34,7 @@
                 if (error) {
                     return res.status(400).send({message: 'Les valeurs ne sont pas correctes'})
                 }
-
+            console.log('je suis juste avant la création');
             const alreadyExist = await User.findOne({ email: email })
                 if (alreadyExist){
                     return res.status(401).send({message: 'Cet email existe déjà !'})
@@ -49,11 +51,16 @@
                 message: 'L\'utilisateur est bien enregistré dans la base !'
             })
         } catch (error) {
-            if (error.isJoi === true ) {
+            /* if (error.isJoi === true ) {
                 return res.status(400).send({message: error.message})
             } else {
                 return res.status(401).end()
-            }
+            } */
+            console.log('error dans catch', error.message);
+            res.status(403).send({
+                message: 'Impossible de créer le compte',
+                error,
+            })
         }
     },
 
@@ -95,14 +102,14 @@
                 id: user._id,
                 username: user.username
             },
-                'secretkey',
-                {expiresIn: 1000 * 60 * 60 * 24}
+                process.env.PRIVATE_KEY,
+                {expiresIn: process.env.TOKEN_EXPIRESIN}
             )
 
             // store token in db to have a double authentication check
             user.token = token
             await user.save()
-        
+            console.log('token after save', token)
             // send the token in a cookie
             return res.cookie('token', token, {
                 expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
@@ -117,7 +124,7 @@
             })
             }
         catch (error) {
-            return res.status(500).send({
+            return res.status(403).send({
                 message: 'Impossible d\'exécuter la requête !'
             })
         }
@@ -168,8 +175,8 @@
             const newUserPets = await Promise.all(user.pets.map(async (pet) => (
                 // add a new property to each pet with value equal to real url of each avatar
                 {...pet.toObject(),
-                avatarUrl: `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}`
-                }
+                avatarUrl:  `${process.env.NODE_ENV} == 'development'` ? `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}` : `${process.env.PROTOCOL}://${process.env.HOST}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}`
+            }
                 )))
 
             return res.status(200).send(newUserPets)

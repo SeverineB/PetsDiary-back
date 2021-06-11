@@ -6,7 +6,7 @@
   "scripts": {
     "client-install": "yarn add --prefix client",
     "start": "node server.js",
-    "server": "nodemon server.js",
+    "server": "cross-env NODE_ENV=development nodemon server.js",
     "client": "yarn start --prefix client",
     "dev": "concurrently \"\"yarn start server\" \"yarn start client\""
   },
@@ -17,6 +17,7 @@
     "config": "^3.3.2",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",

@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const config = require('config');
 const multer = require('multer');
 require('dotenv').config();
 
@@ -21,11 +20,13 @@ const app = express();
 app.use(bodyParser.json());
 
 const corsOptions = {
-  origin: ['http://localhost:8080'],
+  origin: ['http://pets-diary-recette.severinebianchi.com', 'http://localhost:8080'],
   allowedHeaders: [
     'Accept',
+    'Origin',
     'Content-Type',
     'Authorization',
+    'X-requested-Width',
     'Access-Control-Allow-Methods',
     'Access-Control-Request-Headers',
   ],
@@ -39,23 +40,14 @@ app.use(cors(corsOptions));
 // cookie-parser middleware
 app.use(cookieParser());
 
-// Database Config
-const db = config.get('mongoURI');
-
-// Connect to Mongo
-mongoose.connect(db,
-  { useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false})
-.then(() => console.log('Connexion avec MongoDB réussie !'))
-.catch(err => {
-    console.log('Erreur lors de la connexion à la database')
-    console.log(err)
-});
-
 // use routes
 app.get('/', (req, res) => {
-    res.send('Ici le super serveur de Pets Diary')
+    res.send(`
+    <div style="margin: 5em auto; font-family: Roboto">
+        <p>Ici le super serveur de Pets Diary qui fonctionne trop bien !</p>
+        <p>Serveur lancé sur ${process.env.HOST}/${process.env.PORT}</p>
+        <p>Mongodb : ${process.env.MONGO_URI}</p>
+    </div>`)
 })
 app.use('/upload/avatars', express.static(__dirname + '/upload/avatars'));
 app.use('/api/pet', pets);
@@ -72,8 +64,14 @@ app.use((err, req, res, next) => {
   res.status(500).send({message: 'Une erreur est survenue !'});
 })
 
-const port = 3000;
-const HOST = 'localhost';
+// Connect to Mongo
+mongoose.connect(process.env.MONGO_URI,
+    { useNewUrlParser: true,
+    useUnifiedTopology: true})
+  .then(() => console.log('Connexion avec MongoDB réussie !'))
+  .catch(err => {
+      console.log('Aaaaargh, pas de connexion avec la database MongoDB Atlas')
+      console.log(err)
+  });
 
-app.listen(port, () => {
-    console.log(`Serveur lancé sur le port ${port}`)});
+app.listen(process.env.PORT, process.env.HOST, () => console.log(`Serveur lancé sur le port ${process.env.PORT}`));
