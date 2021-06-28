@@ -38,8 +38,12 @@ module.exports = {
         try {
             const { user_id, name, age, species, breed, sex, birthdate, ide } = req.body
             const avatarPath = req.file.path
-          const avatarUrl = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${req.file.filename}`
-          console.log('avatar url est', avatarUrl)
+          /* if (process.env.NODE_ENV === "development") {
+            const avatarUrl = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${req.file.filename}`
+        } else if (process.env.NODE_ENV === "production") {
+            const avatarUrl = `${process.env.PROTOCOL}://${process.env.HOST}/${req.file.filename}`
+        } */
+        const avatarUrl = `${process.env.BACKEND_URL}/${req.file.filename}`
             const newPet = await Pet.create({
                 user_id,
                 name,
@@ -70,8 +74,11 @@ module.exports = {
 
     updatePet: async (req, res) => {
         const datas = req.body
-        const avatarPath = req.file.path
         const id = req.params.id
+  
+        if (req.file) {
+            const avatarPath = req.file.path
+        }
 
         try {
             const petToUpdate = await Pet.findByIdAndUpdate(id, {
@@ -84,9 +91,11 @@ module.exports = {
                 birthdate: req.body.birthdate,
                 ide: req.body.ide,
             })
-            const avatarUrl = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${req.file.filename}`
-            const petToSend = await Pet.findById(id)
-            res.status(201).send(petToSend)
+            
+            const avatarUrl = `${process.env.BACKEND_URL}/${req.file.filename}`
+            
+            //const petToSend = await Pet.findById(id)
+            res.status(201).send({petToUpdate, avatarUrl})
         }
         catch (error) {
             return res.status(400).send({message: 'Impossible de modifier les infos de cet animal'});
