@@ -1,4 +1,5 @@
     const User = require('../models/user.model');
+    const Pet = require('../models/pet.model');
     const jwt = require('jsonwebtoken');
     const bcrypt = require('bcryptjs');
     const { authSchema } = require('../validations/users');
@@ -86,18 +87,18 @@
 
             const user = await User.findOne({ email: email })
                 if (!user) {
-                    return res.status(401).send({ 
+                    return res.status(401).send({
                         message: 'L\'utilisateur n\'existe pas !'
                     })
                 }
 
             const isMatch = await bcrypt.compare(password, user.password)
                 if (!isMatch) {
-                    return res.status(401).send({ 
+                    return res.status(401).send({
                         message: 'Le mot de passe n\est pas correct!'
                     })
                 }
-        
+
             const token = jwt.sign({
                 id: user._id,
                 username: user.username
@@ -140,7 +141,7 @@
             .populate({
                 path: 'pets',
                 populate: {
-                path: 'weight', 
+                path: 'weight',
                 model: 'weight'
                 }
             })
@@ -195,7 +196,9 @@
             const userEvents = await Promise.all(user.events.map(async (event) => {
                 // convert mongoose obj to allow adding properties
                 const eventObj = event.toObject()
+                console.log('event objet', eventObj)
                 const pet = await Pet.findById(eventObj.pet_id)
+                console.log('pet', pet)
                 const petName = pet.name
                 eventObj.petName = petName
                 return eventObj
@@ -204,6 +207,7 @@
             return res.status(200).send(userEvents)
         }
         catch (error) {
+            console.log('error des events', error)
             return res.status(400).send({message: 'Impossible de récupérer les évènements de ce user'});
         }
     },

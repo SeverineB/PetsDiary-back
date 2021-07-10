@@ -67,7 +67,8 @@ app.use((err, req, res, next) => {
 // Connect to Mongo
 mongoose.connect(process.env.MONGO_URI,
     { useNewUrlParser: true,
-    useUnifiedTopology: true})
+    useUnifiedTopology: true,
+    useFindAndModify: false})
   .then(() => console.log('Connexion avec MongoDB réussie !'))
   .catch(err => {
       console.log('Aaaaargh, pas de connexion avec la database MongoDB Atlas')

@@ -1,15 +1,19 @@
 FROM node:12.18-alpine
 
-RUN npm install -g nodemon
-
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --production --silent && mv node_modules ../
+RUN yarn install --production --silent && mv node_modules ../
 
 COPY . .
 
-EXPOSE 8000
+EXPOSE 3000
 
-CMD ["npm", "run", "server"]
+RUN yarn global add cross-env
+
+RUN yarn global add dotenv
+
+RUN yarn global add nodemon
+
+CMD ["yarn", "server"]
