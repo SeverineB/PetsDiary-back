@@ -176,13 +176,16 @@
             const newUserPets = await Promise.all(user.pets.map(async (pet) => (
                 // add a new property to each pet with value equal to real url of each avatar
                 {...pet.toObject(),
-                avatarUrl:  `${process.env.NODE_ENV} == 'development'` ? `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}` : `${process.env.PROTOCOL}://${process.env.HOST}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}`
+                    //avatarUrl:  `${process.env.PROTOCOL}://${process.env.HOST}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}`
+                    avatarUrl: `${process.env.BACKEND_URL}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}`
+                    //avatarUrl:  `${process.env.NODE_ENV} === 'development'` ? `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}` : `/${pet.avatarPath.replace('upload\\avatars\\', 'upload/avatars/')}`
             }
                 )))
 
             return res.status(200).send(newUserPets)
         }
         catch (error) {
+            console.log('error', error)
             return res.status(400).send({message: 'Impossible de récupérer les animaux de ce user'})
         }
     },
