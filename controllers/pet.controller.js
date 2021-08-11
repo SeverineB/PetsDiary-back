@@ -38,8 +38,10 @@ module.exports = {
         try {
             const { user_id, name, age, species, breed, sex, birthdate, ide } = req.body
             const avatarPath = req.file.path
+            console.log('******** AVATAR PATH******', avatarPath)
           if (process.env.NODE_ENV === "development") {
             const avatarUrl = `${process.env.BACKEND_URL}/${req.file.filename}`
+            console.log('******** AVATAR PATH IN DEVELOPMENT******', avatarUrl)
         } else if (process.env.NODE_ENV === "production") {
             const avatarUrl = `http://pets-diary-server.severinebianchi.com/${req.file.filename}`
         }
@@ -55,6 +57,7 @@ module.exports = {
                 ide,
                 avatarPath,
             });
+            console.log('******** NEW PET ******', newPet)
             await newPet.save()
 
             const userById = await User.findByIdAndUpdate(newPet.user_id, {
