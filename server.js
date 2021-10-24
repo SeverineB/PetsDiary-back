@@ -20,7 +20,7 @@ const app = express();
 app.use(bodyParser.json());
 
 const corsOptions = {
-  origin: ['http://pets-diary-recette.severinebianchi.com', 'http://localhost:8080'],
+  origin: ['http://pets-diary-recette.severinebianchi.com', 'http://localhost:8080', 'http://192.168.1.22:8080'],
   allowedHeaders: [
     'Accept',
     'Origin',
@@ -46,6 +46,7 @@ app.get('/', (req, res) => {
     <div style="margin: 5em auto; font-family: Roboto">
         <p>Ici le super serveur de Pets Diary qui fonctionne trop bien !</p>
         <p>Serveur lancé sur ${process.env.HOST}/${process.env.PORT}</p>
+        <p>Environment ${process.env.NODE_ENV}</p>
         <p>Mongodb : ${process.env.MONGO_URI}</p>
     </div>`)
 })

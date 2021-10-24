@@ -44,6 +44,8 @@ module.exports = {
             console.log('******** AVATAR PATH IN DEVELOPMENT******', avatarUrl)
         } else if (process.env.NODE_ENV === "production") {
             const avatarUrl = `http://pets-diary-server.severinebianchi.com/${req.file.filename}`
+            console.log('******** AVATAR PATH IN PRODUCTION******', avatarUrl)
+
         }
             //const avatarUrl = `${process.env.BACKEND_URL}/${req.file.filename}`
             const newPet = await Pet.create({
@@ -83,11 +85,10 @@ module.exports = {
         const id = req.params.id
 
         try {
-            const petToUpdate = await Pet.findByIdAndUpdate(id, datas)
+            const petToUpdate = await Pet.findByIdAndUpdate(id, datas, {new: true})
             if (req.file) {
                 const avatarUrl = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/${req.file.filename}`
             }
-
             res.status(201).send(petToUpdate)
         }
         catch (error) {
