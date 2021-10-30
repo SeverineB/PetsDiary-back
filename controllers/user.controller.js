@@ -20,10 +20,8 @@
     // Create new user
 
     register: async (req, res) => {
-        console.log('je suis dans REGISTER');
         try {
             const { username, email, password } = req.body;
-            console.log('valeurs saisies', username + email + password);
 
             if (!email || !password || !username) {
                 return res.status(400).send({message: 'Tous les champs doivent être renseignés'})
