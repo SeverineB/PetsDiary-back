@@ -50,11 +50,11 @@
                 message: 'L\'utilisateur est bien enregistré dans la base !'
             })
         } catch (error) {
-            /* if (error.isJoi === true ) {
+            if (error.isJoi === true ) {
                 return res.status(400).send({message: error.message})
             } else {
                 return res.status(401).end()
-            } */
+            }
             console.log('error dans catch', error.message);
             res.status(403).send({
                 message: 'Impossible de créer le compte',
