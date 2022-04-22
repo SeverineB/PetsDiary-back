@@ -38,16 +38,13 @@ module.exports = {
         try {
             const { user_id, name, age, species, breed, sex, birthdate, ide } = req.body
             const avatarPath = req.file.path
-            console.log('******** AVATAR PATH******', avatarPath)
           if (process.env.NODE_ENV === "development") {
             const avatarUrl = `${process.env.BACKEND_URL}/${req.file.filename}`
-            console.log('******** AVATAR PATH IN DEVELOPMENT******', avatarUrl)
         } else if (process.env.NODE_ENV === "production") {
-            const avatarUrl = `http://pets-diary-server.severinebianchi.com/${req.file.filename}`
-            console.log('******** AVATAR PATH IN PRODUCTION******', avatarUrl)
+            const avatarUrl = `http://pets-diary-server.severinebianchi.com/${avatarPath}`
 
         }
-            //const avatarUrl = `${process.env.BACKEND_URL}/${req.file.filename}`
+
             const newPet = await Pet.create({
                 user_id,
                 name,
@@ -59,7 +56,6 @@ module.exports = {
                 ide,
                 avatarPath,
             });
-            console.log('******** NEW PET ******', newPet)
             await newPet.save()
 
             const userById = await User.findByIdAndUpdate(newPet.user_id, {
@@ -68,11 +64,11 @@ module.exports = {
 
             await userById.save()
             res.status(200).send({
-            newPet,
-            avatarUrl
+            newPet
             });
         }
         catch (error) {
+          console.log('error when creating new pet', error)
             return res.status(400).send({message: 'impossible de créer l\'animal'})
         }
     },

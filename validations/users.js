@@ -1,11 +1,10 @@
 const Joi = require('joi');
 
-const pattern = "/(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[$@$!#.])[A-Za-zd$@$!%*?&.]{8,20}/";
-
 const authSchema = Joi.object({
   email: Joi.string().email().lowercase().required(),
-  username: Joi.string().alphanum().min(3).max(30).required(),
-  password: Joi.string().min(5).pattern(new RegExp(pattern))
+  username: Joi.string().alphanum().min(4).max(30).required(),
+  password: Joi.string()
+  .pattern(new RegExp('^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]{5,30}$'))
 })
 
 module.exports = {

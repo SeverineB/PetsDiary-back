@@ -77,7 +77,7 @@
             const { email, password } = req.body
 
             // TODO validate with Joi schema
-            /*  const result = await authSchema.validateAsync(req.body);
+            /* const result = await authSchema.validateAsync(req.body);
             const { error, value } = result;
             if (error) {
                 res.status(401).send({message: error.message})
